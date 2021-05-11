@@ -64,18 +64,37 @@ body {
 }
 
 .black_background_content {
-  background-color: black;
+  background: url("/img/Surprised.jpg") center/cover;
   background-clip: border-box;
   border: 2px solid #6610f2;
   border-radius: 0.75rem;
   padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
 }
 
-.purple_background_content {
-  background-color: #6610f2;
+.black_background_content1 {
+  background: url("/img/miltank-gif-.gif") center/cover;
   background-clip: border-box;
+  border: 2px solid #6610f2;
   border-radius: 0.75rem;
   padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
+}
+
+
+.purple_background_content {
+  background: url("/img/bulbasaur.png") center/cover;
+  background-clip: border-box;
+  border: 2px solid #6610f2;
+  border-radius: 0.75rem;
+  padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
 }
 
 #left_column {
@@ -102,7 +121,7 @@ body {
   display: grid;
   grid-template-columns: 30% 70%;
   grid-template-rows: 40% 20% 40%;
-  background: url("/img/banner-2.jpg") center/cover;
+  background: url("/img/squirtle-squad.jpg") center/cover;
 }
 
 a {
@@ -146,9 +165,12 @@ input[type='submit']:active {
   grid-column: 1 / span 1;
   grid-row: 2 / span 1;
   padding-left: 1.50em;
+  text-shadow: 0 2px 2px black;
+  
 }
 
 .hero_image_banner nav {
+
   display: table;
   grid-column: 2 / span 1;
   grid-row: 2 / span 1;

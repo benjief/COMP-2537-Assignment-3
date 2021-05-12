@@ -187,6 +187,53 @@ app.get('/profile', function(req, res) {
 
 });
 
+app.get('/recipe', function(req, res) {
+
+    // check for a session first!
+    if(req.session.loggedIn) {
+
+        // DIY templating with DOM, this is only the husk of the page
+        let templateFile = fs.readFileSync('./assets/templates/recipe_template.html', "utf8");
+        let templateDOM = new JSDOM(templateFile);
+        let $template = require("jquery")(templateDOM.window);
+
+        // put the name in
+        $template("#profile_name").html(req.session.email);
+
+        // insert the left column from a different file (or could be a DB or ad network, etc.)
+        let left = fs.readFileSync('./assets/templates/left_content.html', "utf8");
+        let leftDOM = new JSDOM(left);
+        let $left = require("jquery")(leftDOM.window);
+        // Replace!
+        $template("#left_placeholder").replaceWith($left("#left_column"));
+
+        // insert the left column from a different file (or could be a DB or ad network, etc.)
+        let middle = fs.readFileSync('./assets/templates/middle_content.html', "utf8");
+        let middleDOM = new JSDOM(middle);
+        let $middle = require("jquery")(middleDOM.window);
+        // Replace!
+        $template("#middle_placeholder").replaceWith($middle("#middle_column"));
+
+
+        // insert the left column from a different file (or could be a DB or ad network, etc.)
+        let right = fs.readFileSync('./assets/templates/right_content.html', "utf8");
+        let rightDOM = new JSDOM(right);
+        let $right = require("jquery")(rightDOM.window);
+        // Replace!
+        $template("#right_placeholder").replaceWith($right("#right_column"));
+
+        res.set('Server', 'Wazubi Engine');
+        res.set('X-Powered-By', 'Wazubi');
+        res.send(templateDOM.serialize());
+
+    } else {
+        // not logged in - no session!
+        res.redirect('/');
+    }
+
+
+});
+
 
 // No longer need body-parser!
 app.use(express.json());

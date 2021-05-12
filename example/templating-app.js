@@ -201,14 +201,14 @@ app.get('/recipe', function(req, res) {
         $template("#profile_name").html(req.session.email);
 
         // insert the left column from a different file (or could be a DB or ad network, etc.)
-        let left = fs.readFileSync('./assets/templates/left_content.html', "utf8");
+        let left = fs.readFileSync('./assets/templates/left_content-recipe.html', "utf8");
         let leftDOM = new JSDOM(left);
         let $left = require("jquery")(leftDOM.window);
         // Replace!
         $template("#left_placeholder").replaceWith($left("#left_column"));
 
         // insert the left column from a different file (or could be a DB or ad network, etc.)
-        let middle = fs.readFileSync('./assets/templates/middle_content.html', "utf8");
+        let middle = fs.readFileSync('./assets/templates/middle_content-recipe.html', "utf8");
         let middleDOM = new JSDOM(middle);
         let $middle = require("jquery")(middleDOM.window);
         // Replace!
@@ -216,7 +216,7 @@ app.get('/recipe', function(req, res) {
 
 
         // insert the left column from a different file (or could be a DB or ad network, etc.)
-        let right = fs.readFileSync('./assets/templates/right_content.html', "utf8");
+        let right = fs.readFileSync('./assets/templates/right_content-recipe.html', "utf8");
         let rightDOM = new JSDOM(right);
         let $right = require("jquery")(rightDOM.window);
         // Replace!

@@ -85,6 +85,39 @@ body {
   text-shadow: 0 2px 2px black;
 }
 
+.togepi-food {
+  background: url("/img/togepi-food.png") center/cover;
+  background-clip: border-box;
+  border: 2px solid #6610f2;
+  border-radius: 0.75rem;
+  padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
+}
+
+.kingler-food {
+  background: url("/img/kingler-food.png") center/cover;
+  background-clip: border-box;
+  border: 2px solid #6610f2;
+  border-radius: 0.75rem;
+  padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
+}
+
+.slowpoke-food {
+  background: url("/img/slowpoke-food.png") center/cover;
+  background-clip: border-box;
+  border: 2px solid #6610f2;
+  border-radius: 0.75rem;
+  padding: 0.5em;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 2px black;
+}
+
 
 .purple_background_content {
   background: url("/img/bulbasaur.png") center/cover;

@@ -1,10 +1,9 @@
 body {
   display: grid;
-  grid-template-rows: 10vh 45vh 38vh 7vh;
+  grid-template-rows: 10vh 83vh 7vh;
   grid-template-areas: 
     "audioPlayer"
     "form"
-    "team-19"
     "footer";
   align-items: center;
   font-family: 'Press Start 2P', Arial, Helvetica, sans-serif;

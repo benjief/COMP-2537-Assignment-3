@@ -1,3 +1,4 @@
+'use strict'
 // Requires
 const express = require('express');
 const session = require('express-session')
@@ -5,6 +6,14 @@ const app = express();
 const fs = require("fs");
 const mysql = require('mysql');
 const { JSDOM } = require('jsdom');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+const morgan = require('morgan');
+const path = require('path');
+const rfs = require('rotating-file-stream');
+
+
 
 // another potential topic, no time :/
 // https://www.npmjs.com/package/express-brute
@@ -17,6 +26,14 @@ app.use('/fonts', express.static('assets/fonts'));
 app.use('/html', express.static('assets/html'));
 app.use('/media', express.static('assets/media'));
 
+//logging
+const accessLogStream = rfs.createStream('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'assets/log')
+});
+
+app.use(morgan(':referrer :url :user-agent',
+    { stream: accessLogStream }));
 
 app.use(session(
     {
@@ -46,6 +63,7 @@ app.get('/', function (req, res) {
 
 });
 
+
 // async together with await
 async function initDB() {
 
@@ -60,21 +78,24 @@ async function initDB() {
 
     const createDBAndTables = `CREATE DATABASE IF NOT EXISTS test;
         use test;
+        DROP TABLE user; 
         CREATE TABLE IF NOT EXISTS user (
         ID int NOT NULL AUTO_INCREMENT,
+        name varchar(30),
         email varchar(30),
         password varchar(30),
         PRIMARY KEY (ID));`;
 
     // Used to wait for a promise to finish ... IOW we are avoiding asynchronous behavior
     // Why? See below!
-    await connection.query(createDBAndTables);
-    let results = await connection.query("SELECT COUNT(*) FROM user");
-    let count = results[0][0]['COUNT(*)'];
-
-    if (count < 1) {
-        results = await connection.query("INSERT INTO user (email, password) values ('arron_ferguson@bcit.ca', 'admin')");
-        console.log("Added one user record.");
+    try {
+    results = await connection.query("INSERT INTO user (name, email, password) values ('Arron', 'arron_ferguson@bcit.ca', 'admin')");
+    results = await connection.query("INSERT INTO user (name, email, password) values ('CoolKid', 'admin1@bcit.ca', 'admin')");
+    results = await connection.query("INSERT INTO user (name, email, password) values ('SmartKid', 'admin2@bcit.ca', 'admin')");
+    results = await connection.query("INSERT INTO user (name, email, password) values ('AwesomeKid', 'admin3@bcit.ca', 'admin')");
+    results = await connection.query("INSERT INTO user (name, email, password) values ('AmazingKid', 'admin4@bcit.ca', 'admin')");
+    } catch(error) {
+        console.error("Error in inserting data into table");
     }
     connection.end();
 }
@@ -90,7 +111,8 @@ app.get('/profile', function (req, res) {
         let $template = require("jquery")(templateDOM.window);
 
         // put the name in
-        $template("#profile_name").attr("value", req.session.email);
+        $template("#profile_name").attr("value", `${req.session.name}(${req.session.email})!`);
+        $template("#greeting").html("Welcome!&nbsp<span id='username'>" + req.session.name + '</span>');
 
         // insert the left column from a different file (or could be a DB or ad network, etc.)
         let left = fs.readFileSync('./assets/templates/left_card.html', "utf8");
@@ -124,6 +146,7 @@ app.get('/profile', function (req, res) {
 
 });
 
+
 // No longer need body-parser!
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
@@ -141,14 +164,8 @@ app.post('/authenticate', function (req, res) {
             } else {
                 // authenticate the user, create a session
                 req.session.loggedIn = true;
+                req.session.name = rows.name;
                 req.session.email = rows.email;
-                req.session.save(function (err) {
-                    // session saved
-                })
-                // this will only work with non-AJAX calls
-                // res.redirect("/profile");
-                // have to send a message to the browser and let front-end complete
-                // the action
                 res.send({ status: "success", msg: "Logged in." });
             }
         });
@@ -193,17 +210,68 @@ app.get('/dashboard', function (req, res) {
     res.redirect("/");
 })
 
+
+
 app.get('/logout', function (req, res) {
     req.session.destroy(function (error) {
         if (error) {
             console.log(error);
         }
     });
-    res.redirect("/profile");
+    res.redirect("/");
 })
+
+
+var userCount = 0;
+
+io.on('connect', function(socket) {
+    userCount++;
+    socket.userName = " ";
+
+    io.emit('user_joined', { user: socket.userName, numOfUsers: userCount });
+    console.log('Connected users:', userCount);
+
+    socket.on('disconnect', function(data) {
+        userCount--;
+        io.emit('user_left', { user: socket.userName, numOfUsers: userCount });
+
+        console.log('Connected users:', userCount);
+    });
+
+    socket.on('chatting', function(data) {
+
+        console.log('User', data.name, 'Message', data.message);
+
+        if(socket.userName == " ") {
+            io.emit("chatting", {user: data.name, text: buildMessage(data.message)});
+            socket.userName = data.name;
+
+        } else {
+
+            io.emit("chatting", {user: socket.userName, text: buildMessage(data.message)});
+        }
+    });
+});
+
+// replacing :) with emoji
+// This block was adapted from code found here:
+// source: https://stackoverflow.com/questions/32922932/parse-smilies-in-node-js-and-socket-io-chat-app
+const SMILES_MAP = {
+    ':)': '&#9786;',
+    ':(': '&#9785;'
+};
+
+function buildMessage(message) {
+    let smiles = Object.keys(SMILES_MAP);
+    smiles.forEach(smile => message = message.replace(smile, SMILES_MAP[smile]));
+    return message;
+}
+// adapted block end.
+
+
 
 // Run Server
 let port = 8000;
-app.listen(port, function () {
+server.listen(port, function () {
     console.log('Listening on port ' + port + '!');
 })

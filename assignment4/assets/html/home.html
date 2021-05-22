@@ -19,7 +19,7 @@
     <form id='loginForm'>
       <div class="titleContainer">
         <p id="formTitle">Welcome!</p>
-        <img src="img/pokeball.png">
+        <img src="img/pokeball.png" alt="pokeball">
       </div>
       <input id='email' type='email' required="required" placeholder="Email" />
       <input id='password' type='password' required="required" placeholder="Password" />
@@ -48,6 +48,7 @@
   <script src="/js/jquery-3.6.0.min.js"></script>
   <script src="/js/jquery.button-audio-player.js"></script>
   <script>
+    'use strict'
     $(document).ready(function () {
 
       $('#audioPlayer').buttonAudioPlayer({
@@ -74,11 +75,8 @@
             $("body").text(jqXHR.statusText);
           }
         });
-
       });
-
     });
-
   </script>
 </body>
 
